@@ -7,6 +7,7 @@ TypeScript가 JavaScript의 가장 큰 차이점은 `Type safety` 이다. 즉, �
 
 아무튼 개인 공부에 손을 놓은 부분이 있는데 다시 필요한 것들을 공부해야겠다.
 
+
 ## TypeScript: A 10_000 Foot View
 ### Create new NPM project
 
@@ -86,7 +87,55 @@ tsconfig.json
 }
 ```
 
+
 ## All About Types
+**Type**은 일련의 값과 그 값을 이용해 할 수 있는 일을 의미한다. 어떤 값의 Type을 알면, 값의 Type을 알게되는 것 뿐만 아니라 해당 Type으로 할 수 있는 연산에 대해서도 정확히 알 수 있다. 
+
+### any
+any는 모든 Type을 대체할 수 있다. any는 어떤 값이든 저장할 수 있으며, 프로그래머 또는 TypeScript가 어떤 Type인지 파악할 수 없을때 기본 Type이 된다. 가능한 애매모호함을 피해야하기때문에 사용을 지양해야 한다.
+> TypeScript가 암시적 anys에 대해 검사하도록 하려면, tsconfig.json에서 noImplicitAny 플래그를 활성화해야 한다.
+
+### unkown
+any Type을 대체할 수 있는 값으로, Type을 미리 알 수 없는 값이 있는 경우에 활용한다. - `구체적으로 언제?`
+
+### boolean
+true 또는 false
+
+### number
+정수, 부동 소수점, 양수, 음수, 무한대, NaN 등 모든 숫자의 집합
+
+### bigint
+반올림 오류 없이 큰 정수로 작업할 수 있는 Type
+
+### string
+문자열
+
+### symbol
+많이 사용하지는 않는데, 사람들이 잘 알려진 올바른 키를 사용하고 있고 실수로 키를 설정하지 않았는지 확인하려는 경우 개체에 대한 기본 반복자를 설정하는 것을 고려할때 사용 - `어떻게 활용하는지?` 
+
+### Objects
+객체의 형태를 지정
+
+### Arrays
+연결(concatenation), 푸시(pushing), 검색(searching) 및 슬라이싱(slicing)과 같은 연산을 지원하는 특별한 객체
+> TypeScript는 TypeScript는 `T[]` 및 `Array<T>`의 두 가지 배열 구문을 지원한다. 의미와 성능면에서 큰 차이가 없음으로 취향 차이다.
+
+### Tuples
+Array의 하위 Type으로, 각 인덱스 값에 알고있는 특정 Type이 있는 고정 길이 배열을 입력하는 방법
+> 명시적으로 Type을 지정해야 한다.
+
+### null, undefined, void and never
+JavaScript에는 null과 undefined 두 가지 값이 있으며, TypeScript도 이를 지원
+* null: 값이 없음
+* undefined: 무언가가 아직 정의되지 않았음
+
+추가로 TypeScript는 void 및 never을 지원
+* void: 명시적으로 아무 것도 반환하지 않는 함수의 반환 Type
+* never: 전혀 반환하지 않는 함수의 Type (예외를 발생시키거나, 영원히 실행되지 않는 함수)
+
+### Enums
+열거형 Type
+
 
 ## Functions
 
