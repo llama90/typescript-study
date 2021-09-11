@@ -139,6 +139,78 @@ JavaScript에는 null과 undefined 두 가지 값이 있으며, TypeScript도 �
 
 ## Functions
 
+### Declaring and Invoking Functions
+JavaScript에서 함수는 일급 객체(first-class object)로, 다른 객체와 동일하게 사용할 수 있다. 변수에 할당할 수 있고, 다른 함수에 전달할 수 있고, 함수에서 반환할 수 있으며, 객체와 프로토타입에 할당하고, 속성을 쓰고, 해당 속성을 다시 쓸 수 있다. TypeScript는 이러한 일련의 작업을 Type 시스템으로 모델링한다.
+
+TypeScript에서의 함수를 선언하는 방법
+```TypeScript
+// Named function
+function greet(name: string) { 
+  return 'hello ' + name
+}
+
+// Function expression
+let greet2 = function(name: string) { 
+  return 'hello ' + name
+}
+
+// Arrow function expression
+let greet3 = (name: string) => { 
+  return 'hello ' + name
+}
+
+// Shorthand arrow function expression
+let greet4 = (name: string) => 
+  'hello ' + name
+
+// Function constructor
+let greet5 = new Function('name', 'return "hello " + name')
+```
+* 모든 구문은 Type 안전성을 기반으로 선언
+* 매개변수에 대한 필수 Type 애노테이션과 반환 Type에 대한 선택적 애노테이션에 대해 동일한 규칙을 따름
+  * 매개변수(parameter): 함수 선언(function declaration)의 일부로 선언된 함수를 실행하는데 필요한 데이터, 형식 매개변수(*formal paramter*)라고도 함
+  * 인수(argument): 호출할때 함수에 전달한 데이터, 실제 매개변수(*actual parameter*)라고도 함
+
+#### Optional and Default Parameters
+**?** 문자를 사용해 매개변수를 선택 사항으로 표시할 수 있다. 함수의 매개변수를 선언할 때 필수 매개변수가 먼저 와야 하고, 그 다음에 선택적 매개변수가 와야 한다. 선택적 매개변수에 기본값을 제공할 수 있다. 기본값이 없는 매개변수에 대해 명시적인 애노테이션을 추가할 수도 있다.
+
+#### Rest Parameters
+함수가 인수 목록을 취하는 경우 목록을 배열로 전달할수 있다. 경우에 따라 고정적인 개수의 인수를 사용하는 고정 인수(fixed-arity) API 대신, 가변적인 개수의 인수를 사용하는 가변 함수(variadic function) API를 사용할 필요가 있다. - `뭔 소리인지?`
+
+#### call, apply, and bind
+괄호 **()** 를 사용하여 함수를 호출하는 것 외에도 두 가지 방법이 더 있다.
+
+```typescript
+function add(a: number, b: number): number { 
+  return a + b
+}
+
+add(10, 20) // evaluates to 30
+add.apply(null, [10, 20]) // evaluates to 30 
+add.call(null, 10, 20) // evaluates to 30 
+add.bind(null, 10, 20)() // evaluates to 30
+```
+
+* apply(): 함수 내에서 this에 값을 바인딩하고(예제에서는 null에 바인딩), 두 번째 인수를 함수의 매개변수에 퍼트린다(spread). call은 동일하지만 순서대로 인수를 적용한다.
+* bind(): this 인수와 인수 목록을 함수에 바인딩하는 점에서 유사하나, bind가 함수를 호출하지 않는다. 대신 ()로 호출할 수 있는 새 함수를 반환한다.
+
+#### Typing this
+`이해 필요`
+
+#### Generator Functions
+많은 값을 생성하는 편리한 방법이다.
+
+#### Iterators
+Generator와 연관이 있으며, Generator는 값 스트림을 생성하는 방법인 반면, Iterator는 이렇게 생성된 값을 사용하는 방법이다. Iterator의 정의는 `속성 값이 있는 개체를 반환하고 완료되는 next라는 메서드를 정의하는 개체`이다. 
+
+#### Call Signatures
+`이해 필요`
+
+#### Contextual Typing
+
+
+#### Overloaded Function Types
+
 ## Classes and Interfaces
 
 ## Advanced Types
