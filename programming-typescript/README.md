@@ -171,14 +171,19 @@ let greet5 = new Function('name', 'return "hello " + name')
   * 매개변수(parameter): 함수 선언(function declaration)의 일부로 선언된 함수를 실행하는데 필요한 데이터, 형식 매개변수(*formal paramter*)라고도 함
   * 인수(argument): 호출할때 함수에 전달한 데이터, 실제 매개변수(*actual parameter*)라고도 함
 
+> Function constructor 구문은 지양해야 한다. 매개변수 및 반환 유형이 지정되지 않기 때문에 TypeScript의 Type Safety 사상에 위배된다.
+
+TypeScript에서 함수를 호출하는 방법  
+함수를 호출할 때 추가 타입 정보를 제공할 필요가 없다. 일부 인수를 전달하면 TypeScript가 인수별로 함수 매개변수 타입과 매칭되는지 확인한다.
+
 #### Optional and Default Parameters
-**?** 문자를 사용해 매개변수를 선택 사항으로 표시할 수 있다. 함수의 매개변수를 선언할 때 필수 매개변수가 먼저 와야 하고, 그 다음에 선택적 매개변수가 와야 한다. 선택적 매개변수에 기본값을 제공할 수 있다. 기본값이 없는 매개변수에 대해 명시적인 애노테이션을 추가할 수도 있다.
+`?` 애노테이션을 사용해 매개변수를 선택적(Optional)으로 표시할 수 있다. 함수의 매개변수를 선언할 때 필수(required) 매개변수가 먼저 와야 하고, 그 다음에 선택적 매개변수가 와야 한다. 선택적 매개변수에 기본값을 제공할 수 있으며, 기본값을 제공하는 경우 선택적 매개변수 애노테이션인 ? 및 타입을 입력하지 않아도 TypeScript가 기본 값을 바탕으로 매개변수의 타입을 추론한다. 반면에 명시적으로 타입 애노테이션을 추가할 수도 있다.
 
 #### Rest Parameters
-함수가 인수 목록을 취하는 경우 목록을 배열로 전달할수 있다. 경우에 따라 고정적인 개수의 인수를 사용하는 고정 인수(fixed-arity) API 대신, 가변적인 개수의 인수를 사용하는 가변 함수(variadic function) API를 사용할 필요가 있다. - `뭔 소리인지?`
+함수가 인수 목록을 취하는 경우 목록을 배열로 전달할수 있다. 경우에 따라 고정적인 개수의 인수를 사용하는 고정 인수(fixed-arity) API 대신, 가변적인 개수의 인수를 사용하는 가변 함수(variadic function) API를 사용할 필요가 있다. TypeScript는 가변 함수를 안전하게 입력하기 위해서 나머지 매개변수(`...`)를 사용한다. 함수는 최대 하나의 나머지 매개변수를 가질 수 있으며, 해당 매개변수는 함수의 매개변수 목록에서 마지막 매개변수여야 한다.
 
 #### call, apply, and bind
-괄호 **()** 를 사용하여 함수를 호출하는 것 외에도 두 가지 방법이 더 있다.
+괄호 `()` 를 사용하여 함수를 호출하는 것 외에도 두 가지 방법이 더 있다.
 
 ```typescript
 function add(a: number, b: number): number { 
@@ -191,25 +196,66 @@ add.call(null, 10, 20) // evaluates to 30
 add.bind(null, 10, 20)() // evaluates to 30
 ```
 
-* apply(): 함수 내에서 this에 값을 바인딩하고(예제에서는 null에 바인딩), 두 번째 인수를 함수의 매개변수에 퍼트린다(spread). call은 동일하지만 순서대로 인수를 적용한다.
+* apply(): 함수 내에서 this에 값을 바인딩하고(예제에서는 null에 바인딩), 두 번째 인수를 함수의 매개변수에 퍼트린다(spread). 
+* call(): apply와 전반적인 기능은 동일하지만 순서대로 인수를 함수의 매개변수에 적용한다.
 * bind(): this 인수와 인수 목록을 함수에 바인딩하는 점에서 유사하나, bind가 함수를 호출하지 않는다. 대신 ()로 호출할 수 있는 새 함수를 반환한다.
 
 #### Typing this
-`이해 필요`
+JavaScript에서는 this 매개변수가 클래스에서 메소드로 사용되는 함수뿐만 아니라, 모든 함수에 대해 정의되어 있다. this는 함수를 호출하는 방법에 따라 다른 값을 가질 수 있으며, 깨지기 쉽고 값을 추론하기 어렵게 만든다(여기서 값이 깨지기 쉽다는 것은 this 매개변수에 값을 할당하는 방법과 연관하여 언제 this 값에 할당되었던 값이 새로운 값으로 할당될지 파악하기 어려운 부분을 의미하는것 같다). TypeScript는 함수에서 this를 사용해야 하는 경우, 예상되는 this 타입을 함수의 첫번째 매개변수로 선언하도록 유도한다. 이를 통해 사용자가 함수에 this 매개변수를 의도에 맞도록 사용할 수 있게 한다.
+
+> JavaScript의 this 매커니즘이 코드 작성시 값 할당에 대한 일관성을 해치고 불확실성을 수반하기 떄문에, this 매개변수를 사용해야하는 경우 자신이 의도한 범위를 벗어나는 것을 막기 위해 this 애노테이션을 지원한다고 이해
 
 #### Generator Functions
-많은 값을 생성하는 편리한 방법이다.
+많은 값을 생성하는 편리한 방법으로, Generator의 소비자가 값이 생성되는 속도를 제어할 수 있도록 한다. 이는 Generator가 소비자가 값을 필요로 할때 만들어주기 때문에 가능하다. `function*` 함수 뒤에 `*` 애노테이션을 이용해 Generator임을 선언하며 호출될때마다 Iterator가 반환된다. 값은 Generator 함수 내에 `yield` 키워드로 할당된 변수 값이 전달된다.
 
 #### Iterators
-Generator와 연관이 있으며, Generator는 값 스트림을 생성하는 방법인 반면, Iterator는 이렇게 생성된 값을 사용하는 방법이다. Iterator의 정의는 `속성 값이 있는 개체를 반환하고 완료되는 next라는 메서드를 정의하는 개체`이다. 
+Generator와 연관이 있으며, Generator는 값 스트림을 생성하는 방법인 반면, Iterator는 이렇게 생성된 값을 사용하는 방법이다. 
+* Iterable: 값이 반복자를 반환하는 함수인 `Symbol.iterator`라는 속성을 포함하는 모든 객체
+* Iterator: 속성 값이 있는 객체를 반환하고, 완료되는 next라는 메소드를 정의하는 객체
 
 #### Call Signatures
-`이해 필요`
+전체 타입의 함수 자체를 표현하는 방법(C++에서 함수에 대한 선언부와 구현부를 나누는 것)을 의미한다. Call Signatures에는 타입 수준(Type Level) 코드만 포함한다. 여기서 타입 수준 코드는 타입과 타입 연산자로만 구성된 코드를 의미한다.
+
+```typescript
+type Log = (message: string, userId?: string) => void
+
+let log: Log=(
+  message,
+  userId = 'Not signed in'
+) => {
+  let time = new Date().toISOString() 
+  console.log(time, message, userId)
+}
+```
+* log를 Call Signature를 이용해 선언
+* Call Signature에 이미 매개변수에 대한 타입을 정의했기 때문에 log에 선언하면서 타입 애노테이션을 추가할 필요가 없다. TypeScript가 Log Call Signature를 기준으로 추론한다.
 
 #### Contextual Typing
-
+**Call Signatures** 예제에서 log를 Log 타입으로 선언했기 때문에 함수 매개변수에 타입에 대해 명시적으로 애노테이션을 추가하지 않아도 TypeScript가 스스로 log의 매개변수 타입을 추론하는 것을 의미한다.
 
 #### Overloaded Function Types
+Overloaded Function은 함수를 여러 Call Signature로 선언하는 것을 의미한다. 함수 오버로드는 같은 이름을 가진 함수에 대해 매개변수는 달리해서 같은 함수 이름을 갖지만 매개변수에 따라 호출되는 로직을 다르게 하고 싶을때 활용한다. JavaScript는 동적 언어이기 때문에 주어진 함수를 호출하는 여러가지 방법이 존재하고, TypeScript는 static type system을 사용해서 이와 같은 Overloaded Function을 모델링한다. 오버로드된 함수 선언 및 입력 타입에 따라 함수의 출력타입을 다르게해서 표현력이 풍부한 API를 디자인할 수 있다.
+
+예를 들어 항공권을 예약하는 함수를 디자인하는 경우 출항일, 입항일 그리고 목적지를 입력받을 수 있을텐데, 왕복인 경우와 편도인 경우를 고려할 수 있다. 이를 위한 함수를 아래와 같이 Overloaded Function으로 디자인할 수 있다.
+
+```typescript
+type Reserve = {
+  (from: Date, to: Date, destination: string): Reservation 
+  (from: Date, destination: string): Reservation
+}
+
+let reserve: Reserve = (
+  from: Date,
+  toOrDestination: Date | string, 
+  destination?: string
+) => {
+  if (toOrDestination instanceof Date && destination !== undefined) {
+    // Book a one-way trip
+  } else if (typeof toOrDestination === 'string') { 
+    // Book a round trip
+  } 
+}
+```
 
 ## Classes and Interfaces
 
