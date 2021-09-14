@@ -257,6 +257,50 @@ let reserve: Reserve = (
 }
 ```
 
+### Polymorphism
+Generic Type Paramter에 대한 이야기로, 함수에 대한 구체적인 타입(Concrete Type)은 함수에서 사용할것이라 예상되는 타입을 정확히 알고, 해당 타입이 실제로 전달되는 경우에 유용하다. 하지만 때때로 타입에 따른 함수 동작을 제약하고 싶지 않을 수 있다. 예를 들어 Filter 함수를 개발하는 경우, function signature를 이용해 Filter 함수가 필요한 타입이 필요할때마다 추가하는 형태로 개발할 수도 있을것이다. 하지만 Object 타입의 경우, 객체의 구체적인 형태를 알지 못하기 때문에 에러가 발생 할 수 있다. 이럴때 Generic Type Parameter를 사용해서 TypeScript가 객체의 구체적인 타입을 추론하도록 유도할 수 있다. 
+* Generic Type Parameter: 타입 수준 제약 조건을 적용하는데 사용되는 Placeholder, 다형성 타입 매개변수라고도 부른다.
+
+```typescript
+type Filter = {
+  <T>(array: T[], f: (item: T) => boolean): T[]
+}
+```
+- Generic Type Parameter T를 사용하는 Filter 함수
+
+TypeScript는 배열에 대해 전달할 타입에서 T를 유추한다. 유추를 통해 모든 T에 대해 해당 타입으로 대체한다. T는 context에서 typechecker에 의해 채워지는 placeholder 타입과 같다. Filter의 타입을 매개변수화 하므로 이를 Generic Type Parameter라 한다. `< >`는 Generic Type Parameter를 선언하는 방법이다. 배치 위치는 Generic 범위로, TypeScript는 해당 범위 내에서 Generic Type Parameter의 모든 인스턴스가 결국 동일한 구체적인 타입에 바인딩 되는지 확인한다. 그리고 Filter를 어떤 타입으로 호출했는지에 따라 T에 바인드할 구체적인 유형을 결정한다. 한 쌍의 `< >` 사이에 원하는 만큼 쉼표로 구분된 Generic Type Parameter를 선언할 수 있다.
+
+```typescript
+filter([1, 2, 3], _ => _ > 2)
+```
+TypeScript가 T를 바인딩하는 방법
+1. 필터의 타입 signature에서 TypeScript는 배열이 T 유형의 element 배열임을 알 수 있다.
+2. TypeScript는 배열 [1, 2, 3]을 전달했으므로 T는 숫자임을 알 수 있다.
+3. TypeScript가 T를 만날때마다 number 타입으로 대체한다.
+  * 매개변수 `f: (item: T) => boolean`는 `f: (item: number) => boolean`이 된다.
+  * 반환타입 `T[]`는 `number[]`가 된다.
+4. TypeScript는 모든 타입이 할당 가능성(assignability)을 충족하는지, f로 전달한 함수가 새로 추론된 signature에 할당 가능한지 확인한다.
+
+Generic은 구체적인 타입이 허용하는 것보다 더 일반적인 방식으로 함수가 수행하는 작업을 처리한다. Generic에 대해서 생각하는 방식은 제약조건(constraints)로, 함수 매개변수에 `n: number`를 애노테이션으로 달아, 매개변수 n의 값이 `number` 타입으로 제한되어 Generic T를 사용하면 T에 바인딩되는 타입의 타입 T가 표시되는 모든 줄에서 동일한 타입으로 제한된다.
+
+> Generic을 사용하면 코드가 일반적이고, 재사용 가능하며, 간결하게 유지된다.
+
+### Type-Driven Development
+먼저 Type Signature를 고려하고 Value를 나중에 채워나가는 프로그래밍 Style
+> Sketch out type signature first, and fill in vlaues later
+
+TypeScript 프로그램을 작성할 때, 먼저 함수 Type Signature를 정의한다. 먼저 타입 수준에서 프로그램을 스케치하고, 구현에 이르기 전에 모든 것을 높은 수준에서 프로그램을 스케치하고, 구현에 이르기 전에 모든 것이 높은 수준에서 이해되는지 확인한다.
+
+```typescript
+function map<T, U>(array: T[], f: (item: T) => U): U[] { 
+  // ...
+}
+```
+
+map을 본적이 없더라도, signature 만으로 map이 처리하는 일에 대한 직관이 있어야 한다. 
+> T의 배열과 U로 매핑하는 함수를사용하고, U의 배열을 반환한다.
+
+
 ## Classes and Interfaces
 
 ## Advanced Types
