@@ -310,6 +310,53 @@ TypeScript는 객체 지향 언어에서 지원하는 다양한 언어적 특성
 
 ## Advanced Types
 
+### Relationship Between Types
+`Subtype`(하위 타입): A와 B 타입이 있을 때, B가 A의 Subtype인 경우, A가 필요한 모든 곳에서 B를 안전하게 사용할 수 있다. `vs.` `Supertype`(상위 타입): 반대로 B가 A의 Supertype인 경우, B가 필요한 모든 곳에서 A를 안전하게 사용할 수 있다.
+* A <: B A는 B의 Subtype 또는 B와 동일한 타입
+* B <: A B는 A의 Subtype 또는 A와 동일한 타입
+
+TypeScript는 타입이 예상 타입의 하위 타입인 경우는 허용하지만, 예상 타입의 상위 타입인 경우는 허용하지 않는다. 타입에 대해 이야기할때 TypeScript의 모양(Object 또는 Class)는 속성 타입에 `covariant` 하다고 한다. 즉, Object A를 Object B에 할당할 수 있으려면, 각 속성(property)이 <: B를 충족하는 속성이어야 한다. 
+
+let 또는 var를 이용해 최초 선언 이후 변경할 수 있는 형태로 변수를 할당하면, 해당 타입은 리터럴 값에서 리터럴이 속한 기본 타입으로 확장된다. `vs.` 반면, const를 이용한 불변(immutable) 선언은 그렇지 않다. let 또는 var를 사용하여 확장되지 않은 타입을 재할당하면 TypeScript가 확장한다.
+
+TypeScript에 범위를 좁히도록 지시하려면 원래 선언에 명시적 타입 주석을 추가한다.
+```TypeScript
+const a = 'x' // 'x'
+let b = a // string
+
+const c: 'x' = 'x' // 'x'
+let d = c  // 'x'
+```
+
+null 또는 undefined로 선언된 변수는 any로 확장되며, 해당 타입으로 선언된 변수들은 선언된 범위를 벗어나면 TypeScript에 의해 해당 변수에 할당된 값으로 타입이 할당된다. 
+
+TypeScript가 타입을 좁게 추론하도록 하려면 const로 할당한다.
+
+TypeScript는 Object에 선언된 속성 이름값에 대한 체크도 수행한다.
+```TypeScript
+type Configuration = {
+  accessKey: string
+  accessSecretKey: string
+  env?: 'prod' | 'dev'
+}
+
+class Setting({
+  constructor(private configuration: Configuration) {}
+})
+
+new Setting({
+  accessKey: "accessKey",
+  accessSscretKey: "accessSecretKey" // accessSscretKey에 대해서 Configuration내에 없는 속성 값이라는 에러 메시지가 발생
+})
+```
+
+TypeScript의 Typechecker는 프로그래머가 코드를 읽는 것처럼 if, ?, || 및 switch와 같은 제어 흐름문(control flow statements)과 typeof, instanceof 및 in과 같은 타입 쿼리(type queries)를 사용하여 타입을 구체화하는 일종의 기호 실행(symbolic execution)인 흐름 기반 타입 추론(flow based type inference)를 실행한다.
+* 기호 실행: 기호 평가기(symbolic evaluator)라는 특수 프로그램을 사용하여 런타임과 동일한 방식으로 프로그램을 실행하지만, 변수에 명확한 값을 할당하지 않는 프로그램 분석 형태다. 대신 각 변수는 프로그램이 실행될 때 값이 제한된 기호로 모델링된다. 기호 실행을 사용하면 다음과 같은 분석이 가능하다.
+  * 이 변수는 사용되지 않습니다.
+  * 이 함수는 절대 반환되지 않습니다.
+  * 12번째 라인에 있는 if문의 분기에서 변수 x는 null이 아님이 보장됩니다.
+* 흐름 기반 타입 추론: TypeScript, Flow, Kotlin 및 Ceylon 등과 같은 소수 언어에서 지원되는 특징으로, 코드 블록 내에서 타입을 구체화하는 방법으로 프로그램을 통해 타입 검사기와 추론에 피드백을 제공하기 위해 기호 실행 엔진(symbolic execution engine)을 가져와 타입검사기에 삽입한다.
+
 ## Handling Errors
 
 ## Asynchronous Programming, Concurrency, and Parallelism
