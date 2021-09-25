@@ -357,6 +357,34 @@ TypeScript의 Typechecker는 프로그래머가 코드를 읽는 것처럼 if, ?
   * 12번째 라인에 있는 if문의 분기에서 변수 x는 null이 아님이 보장됩니다.
 * 흐름 기반 타입 추론: TypeScript, Flow, Kotlin 및 Ceylon 등과 같은 소수 언어에서 지원되는 특징으로, 코드 블록 내에서 타입을 구체화하는 방법으로 프로그램을 통해 타입 검사기와 추론에 피드백을 제공하기 위해 기호 실행 엔진(symbolic execution engine)을 가져와 타입검사기에 삽입한다.
 
+### Advanced Object Types
+Object는 JavaScript의 핵심이며, TypeScript는 객체를 안전하게 표현하고 조작할 수 있는 다양한 방법을 제공한다.
+
+#### Type Operators for Object Types
+* **The keying-in operator** JavaScript 객체에서 필드를 조회하는 방법과 유사하다. 대괄호 표기법을 사용
+* **The keyof operator** keyof를 사용해서 모든 객체의 모든 키를 문자열 리터럴 타입으로 반환
+
+keying-in 및 keyof 연산자를 결합하여 Object의 지정된 키에서 값을 조회하는 typesafe getter 함수를 구현할 수 있다.
+```TypeScript
+function get<
+  O extends object, 
+  K extends keyof O
+>(
+  o: O,
+  k:K 
+): O[K] {
+  return o[k] 
+}
+```
+
+### Advanced Function Types
+* **Improving Type Inference for Tuples** 코드에서 많은 튜플 타입을 사용하는 경우, type assersions을 피하기 위해 활용
+* **User-Defined Type Guards** Type Guard는 TypeScript 내장 기능으로 typeof 및 instanceof로 타입을 구체화
+  * is 연산자를 사용해 매개변수의 타입을 구체화할 수 있으며, 이때 is 연산자는 단일 매개변수로 제한된다.
+
+### Conditional Types
+조건부 타입은 `U 및 V 타입에 의존하는 유형 T를 선언하고, U <: V이면 T를 A에 할당하고, 그렇지 않으면 T를 B에 할당한다`.
+
 ## Handling Errors
 
 ## Asynchronous Programming, Concurrency, and Parallelism
